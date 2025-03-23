@@ -26,6 +26,8 @@ public class GameUI : MonoBehaviour
     private Button equipbuttonn;
     public TMP_Text equipButtonText;
 
+    public RectTransform statsScrollViewContent;
+
     // Sight için deðiþkenler
     private int currentEquippedSight = 0; // Þu anda donatýlmýþ sight (0: default, 1: thermal, 2: nightStalker)
     private int selectedSightIndex = -1;  // hiçbiri seçili deðil
@@ -36,14 +38,16 @@ public class GameUI : MonoBehaviour
 
     private Button selectedButtonAttachment = null;
     private Button selectedButtonSight = null;
+    private Button selectedButtonBarrel=null;
 
-    private void Start()
+    void Start()
     {
         equipbuttonn = equipButton.GetComponent<Button>();
-        LoadSelectedSight(); 
+        LoadSelectedAttachments(); 
+        selectedSightIndex = currentEquippedSight;
+        selectedBarrelIndex = currentEquippedBarrel;
         UpdateEquipButton(); 
     }
-
     public void OnClickEquip()
     {
         // Sight
@@ -138,12 +142,22 @@ public class GameUI : MonoBehaviour
         selectedButtonSight = button;
         selectedButtonSight.interactable = false;
     }
+    public void SelectButtonBarrel(Button button)
+    {
+        if (selectedButtonBarrel != null)
+        {
+            selectedButtonBarrel.interactable = true;
+        }
+        selectedButtonBarrel = button;
+        selectedButtonBarrel.interactable = false;
+    }
 
     public void OnClickAttachmentsButton()
     {
         attachmentsButton.SetActive(false);
         attachments.anchoredPosition = new Vector2(0, 140);
-
+        equipButton.SetActive(true);
+        statsScrollViewContent.offsetMin = new Vector2(0, 0);
         for (int i = 0; i < attachmentsNametext.Length; i++)
         {
             attachmentsNametext[i].gameObject.SetActive(true);
@@ -155,6 +169,7 @@ public class GameUI : MonoBehaviour
         OnClickAttachmentsButton();
         sightScrollView.SetActive(true);
         barrelScroolView.SetActive(false);
+
     }
 
     public void OnClickGrid_3()//barrel
@@ -225,17 +240,16 @@ public class GameUI : MonoBehaviour
 
     private void UpdateEquipButton()
     {
-        equipButton.SetActive(true);
-        // Hem sight hem de barrel için kontrol et
+        // Eðer seçilen sight ve barrel, donatýlmýþ olanlarla tamamen eþleþiyorsa
         if (selectedSightIndex == currentEquippedSight && selectedBarrelIndex == currentEquippedBarrel)
         {
-            equipButtonText.text = "Equýpped"; 
-            equipbuttonn.interactable = false;
+            equipButtonText.text = "Equýpped";
+            equipbuttonn.interactable = false; // Butonu týklanamaz yap
         }
         else
         {
-            equipButtonText.text = "Equýp"; 
-            equipbuttonn.interactable = true;
+            equipButtonText.text = "Equýp";
+            equipbuttonn.interactable = true;  // Butonu týklanabilir yap
         }
     }
 
