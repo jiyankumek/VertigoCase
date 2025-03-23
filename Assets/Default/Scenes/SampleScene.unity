@@ -593,7 +593,7 @@ MonoBehaviour:
   thermalSight: {fileID: 762766873}
   nightStalkertSight: {fileID: 745389385}
   equipButton: {fileID: 1333361640}
-  selectedSightButtonText: {fileID: 412432449}
+  equipButtonText: {fileID: 412432449}
 --- !u!4 &110183623
 Transform:
   m_ObjectHideFlags: 0
