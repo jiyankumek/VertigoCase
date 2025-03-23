@@ -42,7 +42,7 @@ public class GameUI : MonoBehaviour
        
 
         UpdateSightOnWeapon(); // Silahý modifiye et
-        equipButtonText.text = "Equipped";
+        equipButtonText.text = "Equýpped";
         equipbuttonn.interactable = false;
         PlayerPrefs.SetInt("SelectedSightIndex", currentEquippedSight);
         PlayerPrefs.Save();
@@ -141,12 +141,12 @@ public class GameUI : MonoBehaviour
         equipButton.SetActive(true);
         if (selectedSightIndex == currentEquippedSight)
         {
-            equipButtonText.text = "Equipped";
+            equipButtonText.text = "Equýpped";
             equipbuttonn.interactable = false;
         }
         else
         {
-            equipButtonText.text = "Equip";
+            equipButtonText.text = "Equýp";
             equipbuttonn.interactable = true;
         }
     }
