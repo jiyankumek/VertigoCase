@@ -23,9 +23,15 @@ public class GameUI : MonoBehaviour
         }
     }
 
-    public void OnClickGrid()
+    public void OnClickGrid_1()
     {
         OnClickAttachmentsButton();
         SightScrollView.SetActive(true);    
     }
+    public void OnClickGrid_2()
+    {
+        OnClickAttachmentsButton();
+        //SightScrollView.SetActive(true);
+    }
+
 }
