@@ -73,6 +73,20 @@ public class GameUI : MonoBehaviour
         Debug.Log("Donatýlan Sight: " + currentEquippedSight);
         Debug.Log("Donatýlan Barrel: " + currentEquippedBarrel);
     }
+    private void UpdateEquipButton()
+    {
+        // Eðer seçilen sight ve barrel, donatýlmýþ olanlarla tamamen eþleþiyorsa
+        if (selectedSightIndex == currentEquippedSight && selectedBarrelIndex == currentEquippedBarrel)
+        {
+            equipButtonText.text = "Equýpped";
+            equipbuttonn.interactable = false; // Butonu týklanamaz yap
+        }
+        else
+        {
+            equipButtonText.text = "Equýp";
+            equipbuttonn.interactable = true;  // Butonu týklanabilir yap
+        }
+    }
 
     private void UpdateSightOnWeapon()
     {
@@ -94,35 +108,7 @@ public class GameUI : MonoBehaviour
         else if (currentEquippedBarrel == 1) coolBreeze.SetActive(true);
         else if (currentEquippedBarrel == 2) peaceKeeper.SetActive(true);
     }
-    private void LoadSelectedAttachments()
-    {
-        // Sight'ý yükle
-        if (PlayerPrefs.HasKey("SelectedSightIndex"))
-        {
-            currentEquippedSight = PlayerPrefs.GetInt("SelectedSightIndex");
-        }
-        else
-        {
-            currentEquippedSight = 0;
-        }
-        selectedSightIndex = currentEquippedSight;
-        UpdateSightOnWeapon();
-
-        // Barrel'ý yükle
-        if (PlayerPrefs.HasKey("SelectedBarrelIndex"))
-        {
-            currentEquippedBarrel = PlayerPrefs.GetInt("SelectedBarrelIndex");
-        }
-        else
-        {
-            currentEquippedBarrel = 0;
-        }
-        selectedBarrelIndex = currentEquippedBarrel;
-        UpdateBarrelOnWeapon();
-
-        Debug.Log("Yüklenen Sight: " + currentEquippedSight);
-        Debug.Log("Yüklenen Barrel: " + currentEquippedBarrel);
-    }
+    
     public void SelectButtonAttachment(Button button)
     {
         if (selectedButtonAttachment != null)
@@ -169,6 +155,12 @@ public class GameUI : MonoBehaviour
         OnClickAttachmentsButton();
         sightScrollView.SetActive(true);
         barrelScroolView.SetActive(false);
+        if (selectedBarrelIndex != currentEquippedBarrel)
+        {
+            selectedBarrelIndex = currentEquippedBarrel;
+            Debug.Log(selectedBarrelIndex);
+            UpdateBarrelOnWeapon();
+        }
 
     }
 
@@ -177,6 +169,12 @@ public class GameUI : MonoBehaviour
         OnClickAttachmentsButton();
         sightScrollView.SetActive(false);
         barrelScroolView.SetActive(true);
+        if (selectedSightIndex != currentEquippedSight)
+        {
+            selectedSightIndex = currentEquippedSight;
+            Debug.Log(selectedSightIndex);
+            UpdateSightOnWeapon();
+        }
     }
     public void OnClickSight_1(Button button)
     {
@@ -238,20 +236,7 @@ public class GameUI : MonoBehaviour
         UpdateEquipButton();
     }
 
-    private void UpdateEquipButton()
-    {
-        // Eðer seçilen sight ve barrel, donatýlmýþ olanlarla tamamen eþleþiyorsa
-        if (selectedSightIndex == currentEquippedSight && selectedBarrelIndex == currentEquippedBarrel)
-        {
-            equipButtonText.text = "Equýpped";
-            equipbuttonn.interactable = false; // Butonu týklanamaz yap
-        }
-        else
-        {
-            equipButtonText.text = "Equýp";
-            equipbuttonn.interactable = true;  // Butonu týklanabilir yap
-        }
-    }
+    
 
     private void LoadSelectedSight()
     {
@@ -269,5 +254,33 @@ public class GameUI : MonoBehaviour
         Debug.Log("Yüklenen Sight: " + currentEquippedSight);
     }
 
-    
+    private void LoadSelectedAttachments()
+    {
+        // Sight'ý yükle
+        if (PlayerPrefs.HasKey("SelectedSightIndex"))
+        {
+            currentEquippedSight = PlayerPrefs.GetInt("SelectedSightIndex");
+        }
+        else
+        {
+            currentEquippedSight = 0;
+        }
+        selectedSightIndex = currentEquippedSight;
+        UpdateSightOnWeapon();
+
+        // Barrel'ý yükle
+        if (PlayerPrefs.HasKey("SelectedBarrelIndex"))
+        {
+            currentEquippedBarrel = PlayerPrefs.GetInt("SelectedBarrelIndex");
+        }
+        else
+        {
+            currentEquippedBarrel = 0;
+        }
+        selectedBarrelIndex = currentEquippedBarrel;
+        UpdateBarrelOnWeapon();
+
+        Debug.Log("Yüklenen Sight: " + currentEquippedSight);
+        Debug.Log("Yüklenen Barrel: " + currentEquippedBarrel);
+    }
 }
