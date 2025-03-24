@@ -71,9 +71,7 @@ public class GameUI : MonoBehaviour
         selectedButtonMag = magButtons[currentEquippedMag];
         selectedButtonMag.interactable = false;
 
-        selectedSightIndex = currentEquippedSight;
-        selectedBarrelIndex = currentEquippedBarrel;
-        selectedMagIndex = currentEquippedMag;
+        DefaultPlayerPrefsData();
         UpdateEquipButton();
     }
 
@@ -84,7 +82,9 @@ public class GameUI : MonoBehaviour
         {
             if (currentEquippedSight != selectedSightIndex)
             {
-                UpdateInteractibleAttachmentsButton();
+                sightButtons[currentEquippedSight].interactable = true; // Eski sight butonunu aktif yap
+                currentEquippedSight = selectedSightIndex;
+                sightButtons[currentEquippedSight].interactable = false; // Yeni sight butonunu pasif yap
             }
             UpdateSightOnWeapon();
             PlayerPrefs.SetInt("SelectedSightIndex", currentEquippedSight);
@@ -95,10 +95,25 @@ public class GameUI : MonoBehaviour
         {
             if (currentEquippedBarrel != selectedBarrelIndex)
             {
-                UpdateInteractibleAttachmentsButton();
+                barrelButtons[currentEquippedBarrel].interactable = true; // Eski barrel butonunu aktif yap
+                currentEquippedBarrel = selectedBarrelIndex;
+                barrelButtons[currentEquippedBarrel].interactable = false; // Yeni barrel butonunu pasif yap
             }
             UpdateBarrelOnWeapon();
             PlayerPrefs.SetInt("SelectedBarrelIndex", currentEquippedBarrel);
+        }
+
+        // Mag
+        if (selectedMagIndex != -1)
+        {
+            if (currentEquippedMag != selectedMagIndex)
+            {
+                magButtons[currentEquippedMag].interactable = true; // Eski mag butonunu aktif yap
+                currentEquippedMag = selectedMagIndex;
+                magButtons[currentEquippedMag].interactable = false; // Yeni mag butonunu pasif yap
+            }
+            UpdateMagOnWeapon();
+            PlayerPrefs.SetInt("SelectedMagIndex", currentEquippedMag);
         }
 
         PlayerPrefs.Save();
@@ -107,17 +122,27 @@ public class GameUI : MonoBehaviour
     }
     private void UpdateEquipButton()
     {
-        // Eðer seçilen sight ve barrel, donatýlmýþ olanlarla tamamen eþleþiyorsa
-        if (selectedSightIndex == currentEquippedSight && selectedBarrelIndex == currentEquippedBarrel&& selectedMagIndex==currentEquippedMag)
+        if (selectedSightIndex == currentEquippedSight
+            && selectedBarrelIndex == currentEquippedBarrel
+            && selectedMagIndex == currentEquippedMag) 
         {
             equipButtonText.text = "Equýpped";
-            equipbuttonn.interactable = false; // Butonu týklanamaz yap
+            equipbuttonn.interactable = false;
         }
         else
         {
             equipButtonText.text = "Equýp";
-            equipbuttonn.interactable = true;  // Butonu týklanabilir yap
+            equipbuttonn.interactable = true;
         }
+    }
+    private void DefaultPlayerPrefsData() 
+    {
+        selectedSightIndex = currentEquippedSight;
+        selectedBarrelIndex = currentEquippedBarrel;
+        selectedMagIndex = currentEquippedMag;
+        UpdateBarrelOnWeapon();
+        UpdateSightOnWeapon();
+        UpdateMagOnWeapon();   
     }
     private void UpdateInteractibleAttachmentsButton()
     {
@@ -125,7 +150,7 @@ public class GameUI : MonoBehaviour
         selectedButtonSight.interactable = false;
         selectedButtonBarrel = barrelButtons[currentEquippedBarrel];
         selectedButtonBarrel.interactable = false;
-        selectedButtonMag=sightButtons[currentEquippedMag];
+        selectedButtonMag=magButtons[currentEquippedMag];
         selectedButtonMag.interactable = false;
     }
     private void UpdateSightOnWeapon()
@@ -146,11 +171,11 @@ public class GameUI : MonoBehaviour
         purpleMag.SetActive(false);
         bigMag.SetActive(false);
 
-        if (currentEquippedSight == 0) defaultMag.SetActive(true);
-        else if (currentEquippedSight == 1) purpleMag.SetActive(true);
-        else if (currentEquippedSight == 2) greenMag.SetActive(true);
-        else if (currentEquippedSight == 3) redMag.SetActive(true);
-        else if (currentEquippedSight == 4) bigMag.SetActive(true);
+        if (currentEquippedMag == 0) defaultMag.SetActive(true);
+        else if (currentEquippedMag == 1) purpleMag.SetActive(true);
+        else if (currentEquippedMag == 2) greenMag.SetActive(true);
+        else if (currentEquippedMag == 3) redMag.SetActive(true);
+        else if (currentEquippedMag == 4) bigMag.SetActive(true);
     }
     private void UpdateBarrelOnWeapon()
     {
@@ -219,22 +244,22 @@ public class GameUI : MonoBehaviour
         sightScrollView.SetActive(true);
         barrelScroolView.SetActive(false);
         magScroolView.SetActive(false);
-        if (selectedBarrelIndex != currentEquippedBarrel)
+        /*if (selectedBarrelIndex != currentEquippedBarrel)
         {
             selectedBarrelIndex = currentEquippedBarrel;
             Debug.Log(selectedBarrelIndex);
             UpdateBarrelOnWeapon();
             UpdateMagOnWeapon();
-        }
-        for (int i = 0;i<5;i++)// en fazla 5 adet objeye sahip olan eklenti var(mag)
+        }*/
+        for (int i = 0; i < magButtons.Length; i++)
         {
-            if (i < 4)
-            {
-                barrelButtons[i].interactable = true;
-            }
-            
-            magButtons[i].interactable = true;  
+            magButtons[i].interactable = true;
         }
+        for (int i = 0; i < barrelButtons.Length; i++)
+        {
+            barrelButtons[i].interactable = true;
+        }
+        DefaultPlayerPrefsData();
         UpdateInteractibleAttachmentsButton();
         UpdateEquipButton();
     }
@@ -244,19 +269,22 @@ public class GameUI : MonoBehaviour
         sightScrollView.SetActive(false);
         barrelScroolView.SetActive(false);
         magScroolView.SetActive(true);
-        if (selectedMagIndex != currentEquippedMag)
+        /*if (selectedMagIndex != currentEquippedMag)
         {
             selectedMagIndex = currentEquippedMag;
             Debug.Log(selectedMagIndex);
             UpdateSightOnWeapon();
             UpdateBarrelOnWeapon();
-        }
-        for (int i = 0; i < 3; i++)// en fazla 5 adet objeye sahip olan eklenti var(mag)
+        }*/
+        for (int i = 0; i < sightButtons.Length; i++)
         {
             sightButtons[i].interactable = true;
-            barrelButtons[i].interactable = true;
-            
         }
+        for (int i = 0; i < barrelButtons.Length; i++)
+        {
+            barrelButtons[i].interactable = true;
+        }
+        DefaultPlayerPrefsData();
         UpdateInteractibleAttachmentsButton();
         UpdateEquipButton();
     }
@@ -267,22 +295,22 @@ public class GameUI : MonoBehaviour
         sightScrollView.SetActive(false);
         barrelScroolView.SetActive(true);
         magScroolView.SetActive(false);
-        if (selectedSightIndex != currentEquippedSight)
+        /*if (selectedSightIndex != currentEquippedSight)
         {
             selectedSightIndex = currentEquippedSight;
             Debug.Log(selectedSightIndex);
             UpdateSightOnWeapon();
             UpdateMagOnWeapon();
-        }
-        for (int i = 0; i < 5; i++)// en fazla 5 adet objeye sahip olan eklenti var(mag)
+        }*/
+        for (int i = 0; i < sightButtons.Length; i++)
         {
-            if (i < 4)
-            {
-                sightButtons[i].interactable = true;
-            }
-            
-            magButtons[i].interactable = true;  
+            sightButtons[i].interactable = true;
         }
+        for (int i = 0; i < magButtons.Length; i++)
+        {
+            magButtons[i].interactable = true;
+        }
+        DefaultPlayerPrefsData();
         UpdateInteractibleAttachmentsButton();
         UpdateEquipButton();
     }
@@ -362,7 +390,7 @@ public class GameUI : MonoBehaviour
 
     public void OnClickMag_5(Button button)
     {
-        selectedMagIndex = 2;
+        selectedMagIndex = 4;
         defaultMag.SetActive(false);
         purpleMag.SetActive(false);
         greenMag.SetActive(false);
@@ -444,8 +472,7 @@ public class GameUI : MonoBehaviour
         selectedBarrelIndex = currentEquippedBarrel;
         UpdateBarrelOnWeapon();
 
-        Debug.Log("Yüklenen Sight: " + currentEquippedSight);
-        Debug.Log("Yüklenen Barrel: " + currentEquippedBarrel);
+        
 
         // Mag'i yükle
         if (PlayerPrefs.HasKey("SelectedMagIndex"))
@@ -459,7 +486,5 @@ public class GameUI : MonoBehaviour
         selectedMagIndex = currentEquippedMag;
         UpdateMagOnWeapon();
 
-        Debug.Log("Yüklenen Sight: " + currentEquippedSight);
-        Debug.Log("Yüklenen Barrel: " + currentEquippedBarrel);
     }
 }
