@@ -22,6 +22,9 @@ public class GameUI : MonoBehaviour
     public GameObject coolBreeze;
     public GameObject peaceKeeper;
 
+    public Button[] sightButtons; 
+    public Button[] barrelButtons;
+
     public GameObject equipButton;
     private Button equipbuttonn;
     public TMP_Text equipButtonText;
@@ -43,17 +46,27 @@ public class GameUI : MonoBehaviour
     void Start()
     {
         equipbuttonn = equipButton.GetComponent<Button>();
-        LoadSelectedAttachments(); 
+        LoadSelectedAttachments();
+
+        selectedButtonSight = sightButtons[currentEquippedSight];
+        selectedButtonSight.interactable = false;
+        selectedButtonBarrel = barrelButtons[currentEquippedBarrel];
+        selectedButtonBarrel.interactable = false;
+
         selectedSightIndex = currentEquippedSight;
         selectedBarrelIndex = currentEquippedBarrel;
-        UpdateEquipButton(); 
+        UpdateEquipButton();
     }
+
     public void OnClickEquip()
     {
         // Sight
         if (selectedSightIndex != -1)
         {
-            currentEquippedSight = selectedSightIndex;
+            if (currentEquippedSight != selectedSightIndex)
+            {
+                UpdateInteractibleAttachmentsButton();
+            }
             UpdateSightOnWeapon();
             PlayerPrefs.SetInt("SelectedSightIndex", currentEquippedSight);
         }
@@ -61,7 +74,10 @@ public class GameUI : MonoBehaviour
         // Barrel
         if (selectedBarrelIndex != -1)
         {
-            currentEquippedBarrel = selectedBarrelIndex;
+            if (currentEquippedBarrel != selectedBarrelIndex)
+            {
+                UpdateInteractibleAttachmentsButton();
+            }
             UpdateBarrelOnWeapon();
             PlayerPrefs.SetInt("SelectedBarrelIndex", currentEquippedBarrel);
         }
@@ -69,9 +85,6 @@ public class GameUI : MonoBehaviour
         PlayerPrefs.Save();
         equipButtonText.text = "Equýpped";
         equipbuttonn.interactable = false;
-
-        Debug.Log("Donatýlan Sight: " + currentEquippedSight);
-        Debug.Log("Donatýlan Barrel: " + currentEquippedBarrel);
     }
     private void UpdateEquipButton()
     {
@@ -87,7 +100,13 @@ public class GameUI : MonoBehaviour
             equipbuttonn.interactable = true;  // Butonu týklanabilir yap
         }
     }
-
+    private void UpdateInteractibleAttachmentsButton()
+    {
+        selectedButtonSight = sightButtons[currentEquippedSight];
+        selectedButtonSight.interactable = false;
+        selectedButtonBarrel = barrelButtons[currentEquippedBarrel];
+        selectedButtonBarrel.interactable = false;
+    }
     private void UpdateSightOnWeapon()
     {
         defaultSight.SetActive(false);
@@ -161,7 +180,12 @@ public class GameUI : MonoBehaviour
             Debug.Log(selectedBarrelIndex);
             UpdateBarrelOnWeapon();
         }
-
+        for (int i = 0;i<barrelButtons.Length;i++)
+        {
+            barrelButtons[i].interactable = true;     
+        }
+        UpdateInteractibleAttachmentsButton();
+        UpdateEquipButton();
     }
 
     public void OnClickGrid_3()//barrel
@@ -175,68 +199,73 @@ public class GameUI : MonoBehaviour
             Debug.Log(selectedSightIndex);
             UpdateSightOnWeapon();
         }
+        for (int i = 0; i < sightButtons.Length; i++)
+        {
+            sightButtons[i].interactable = true;
+            
+        }
+        UpdateInteractibleAttachmentsButton();
+        UpdateEquipButton();
     }
     public void OnClickSight_1(Button button)
     {
         selectedSightIndex = 0;
-        
         defaultSight.SetActive(true);
         thermalSight.SetActive(false);
         nightStalkertSight.SetActive(false);
+        SelectButtonSight(button);
         UpdateEquipButton();
     }
 
     public void OnClickSight_2(Button button)
     {
         selectedSightIndex = 1;
-        
         defaultSight.SetActive(false);
         thermalSight.SetActive(true);
         nightStalkertSight.SetActive(false);
+        SelectButtonSight(button);
         UpdateEquipButton();
     }
 
     public void OnClickSight_3(Button button)
     {
         selectedSightIndex = 2;
-        
         defaultSight.SetActive(false);
         thermalSight.SetActive(false);
         nightStalkertSight.SetActive(true);
+        SelectButtonSight(button);
         UpdateEquipButton();
     }
 
     public void OnClickBarrel_1(Button button)
     {
         selectedBarrelIndex = 0;
-        
         defaultBarrel.SetActive(true);
         coolBreeze.SetActive(false);
         peaceKeeper.SetActive(false);
+        SelectButtonBarrel(button);
         UpdateEquipButton();
     }
 
     public void OnClickBarrel_2(Button button)
     {
         selectedBarrelIndex = 1;
-        
         defaultBarrel.SetActive(false);
         coolBreeze.SetActive(true);
         peaceKeeper.SetActive(false);
+        SelectButtonBarrel(button);
         UpdateEquipButton();
     }
 
     public void OnClickBarrel_3(Button button)
     {
         selectedBarrelIndex = 2;
-        
         defaultBarrel.SetActive(false);
         coolBreeze.SetActive(false);
         peaceKeeper.SetActive(true);
+        SelectButtonBarrel(button);
         UpdateEquipButton();
     }
-
-    
 
     private void LoadSelectedSight()
     {

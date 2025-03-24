@@ -15,7 +15,7 @@ RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 9
   m_Fog: 0
-  m_FogColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  m_FogColor: {r: 0.5019608, g: 0.5019608, b: 0.5019608, a: 1}
   m_FogMode: 3
   m_FogDensity: 0.01
   m_LinearFogStart: 0
@@ -32,10 +32,10 @@ RenderSettings:
   m_FlareFadeSpeed: 3
   m_HaloTexture: {fileID: 0}
   m_SpotCookie: {fileID: 10001, guid: 0000000000000000e000000000000000, type: 0}
-  m_DefaultReflectionMode: 0
+  m_DefaultReflectionMode: 1
   m_DefaultReflectionResolution: 128
   m_ReflectionBounces: 1
-  m_ReflectionIntensity: 0
+  m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
   m_UseRadianceAmbientProbe: 0
@@ -1069,6 +1069,14 @@ MonoBehaviour:
   defaultBarrel: {fileID: 63714314}
   coolBreeze: {fileID: 1505913481}
   peaceKeeper: {fileID: 414501389}
+  sightButtons:
+  - {fileID: 2060677067}
+  - {fileID: 1846365816}
+  - {fileID: 870506110}
+  barrelButtons:
+  - {fileID: 921721113}
+  - {fileID: 2125775266}
+  - {fileID: 768288907}
   equipButton: {fileID: 1333361640}
   equipButtonText: {fileID: 412432449}
   statsScrollViewContent: {fileID: 9207987}
