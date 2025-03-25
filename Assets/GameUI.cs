@@ -14,6 +14,7 @@ public class GameUI : MonoBehaviour
     public GameObject sightScrollView;
     public GameObject barrelScroolView;
     public GameObject magScroolView;
+    public GameObject tacticalScrollView;
 
     //sight gameobjeleri
     public GameObject defaultSight;
@@ -32,9 +33,15 @@ public class GameUI : MonoBehaviour
     public GameObject coolBreeze;
     public GameObject peaceKeeper;
 
+    //Tactical gameobjeleri
+    public GameObject defaultTactical;
+    public GameObject fireTactical;
+    public GameObject lightTactical;
+
     public Button[] sightButtons; 
     public Button[] barrelButtons;
     public Button[] magButtons;
+    public Button[] tacticalButtons;
 
     public GameObject equipButton;
     private Button equipbuttonn;
@@ -54,22 +61,22 @@ public class GameUI : MonoBehaviour
     private int currentEquippedMag = 0;
     private int selectedMagIndex = -1;
 
+    //tactical için deðiþkenler
+    private int currentEqippedTactical = 0;
+    private int selectedTacticalIndex= -1;
+
     private Button selectedButtonAttachment = null;
     private Button selectedButtonSight = null;
     private Button selectedButtonMag = null;
     private Button selectedButtonBarrel=null;
+    private Button selectedButtonTactical = null;
 
     void Start()
     {
         equipbuttonn = equipButton.GetComponent<Button>();
         LoadSelectedAttachments();
 
-        selectedButtonSight = sightButtons[currentEquippedSight];
-        selectedButtonSight.interactable = false;
-        selectedButtonBarrel = barrelButtons[currentEquippedBarrel];
-        selectedButtonBarrel.interactable = false;
-        selectedButtonMag = magButtons[currentEquippedMag];
-        selectedButtonMag.interactable = false;
+        UpdateInteractibleAttachmentsButton();
 
         DefaultPlayerPrefsData();
         UpdateEquipButton();
@@ -115,6 +122,18 @@ public class GameUI : MonoBehaviour
             UpdateMagOnWeapon();
             PlayerPrefs.SetInt("SelectedMagIndex", currentEquippedMag);
         }
+        //Tactical
+        if (selectedTacticalIndex != -1)
+        {
+            if (currentEqippedTactical != selectedTacticalIndex)
+            {
+                tacticalButtons[currentEqippedTactical].interactable = true; // Eski tactical butonunu aktif yap
+                currentEqippedTactical = selectedTacticalIndex;
+                tacticalButtons[currentEqippedTactical].interactable = false; // Yeni Tactical butonunu pasif yap
+            }
+            UpdateTacticalOnWeapon();
+            PlayerPrefs.SetInt("SelectedTacticalIndex", currentEqippedTactical);
+        }
 
         PlayerPrefs.Save();
         equipButtonText.text = "Equýpped";
@@ -124,7 +143,7 @@ public class GameUI : MonoBehaviour
     {
         if (selectedSightIndex == currentEquippedSight
             && selectedBarrelIndex == currentEquippedBarrel
-            && selectedMagIndex == currentEquippedMag) 
+            && selectedMagIndex == currentEquippedMag&& selectedTacticalIndex== currentEqippedTactical) 
         {
             equipButtonText.text = "Equýpped";
             equipbuttonn.interactable = false;
@@ -140,9 +159,11 @@ public class GameUI : MonoBehaviour
         selectedSightIndex = currentEquippedSight;
         selectedBarrelIndex = currentEquippedBarrel;
         selectedMagIndex = currentEquippedMag;
+        selectedTacticalIndex = currentEqippedTactical;
         UpdateBarrelOnWeapon();
         UpdateSightOnWeapon();
-        UpdateMagOnWeapon();   
+        UpdateMagOnWeapon();
+        UpdateTacticalOnWeapon();
     }
     private void UpdateInteractibleAttachmentsButton()
     {
@@ -152,6 +173,8 @@ public class GameUI : MonoBehaviour
         selectedButtonBarrel.interactable = false;
         selectedButtonMag=magButtons[currentEquippedMag];
         selectedButtonMag.interactable = false;
+        selectedButtonTactical = tacticalButtons[currentEqippedTactical];
+        selectedButtonTactical.interactable = false;
     }
     private void UpdateSightOnWeapon()
     {
@@ -187,7 +210,16 @@ public class GameUI : MonoBehaviour
         else if (currentEquippedBarrel == 1) coolBreeze.SetActive(true);
         else if (currentEquippedBarrel == 2) peaceKeeper.SetActive(true);
     }
-    
+    private void UpdateTacticalOnWeapon()
+    {
+        defaultTactical.SetActive(false);
+        lightTactical.SetActive(false);
+        fireTactical.SetActive(false);
+
+        if (currentEqippedTactical == 0) defaultTactical.SetActive(true);
+        else if (currentEqippedTactical == 1) fireTactical.SetActive(true);
+        else if (currentEqippedTactical == 2) lightTactical.SetActive(true);
+    }
     public void SelectButtonAttachment(Button button)
     {
         if (selectedButtonAttachment != null)
@@ -225,6 +257,15 @@ public class GameUI : MonoBehaviour
         selectedButtonBarrel = button;
         selectedButtonBarrel.interactable = false;
     }
+    public void SelectButtonTactical(Button button)
+    {
+        if (selectedButtonTactical != null)
+        {
+            selectedButtonTactical.interactable = true;
+        }
+        selectedButtonTactical = button;
+        selectedButtonTactical.interactable = false;
+    }
 
     public void OnClickAttachmentsButton()
     {
@@ -244,6 +285,7 @@ public class GameUI : MonoBehaviour
         sightScrollView.SetActive(true);
         barrelScroolView.SetActive(false);
         magScroolView.SetActive(false);
+        tacticalScrollView.SetActive(false);
         /*if (selectedBarrelIndex != currentEquippedBarrel)
         {
             selectedBarrelIndex = currentEquippedBarrel;
@@ -259,6 +301,10 @@ public class GameUI : MonoBehaviour
         {
             barrelButtons[i].interactable = true;
         }
+        for (int i = 0; i < tacticalButtons.Length; i++)
+        {
+            tacticalButtons[i].interactable = true;
+        }
         DefaultPlayerPrefsData();
         UpdateInteractibleAttachmentsButton();
         UpdateEquipButton();
@@ -269,6 +315,7 @@ public class GameUI : MonoBehaviour
         sightScrollView.SetActive(false);
         barrelScroolView.SetActive(false);
         magScroolView.SetActive(true);
+        tacticalScrollView.SetActive(false);
         /*if (selectedMagIndex != currentEquippedMag)
         {
             selectedMagIndex = currentEquippedMag;
@@ -284,6 +331,10 @@ public class GameUI : MonoBehaviour
         {
             barrelButtons[i].interactable = true;
         }
+        for (int i = 0; i < tacticalButtons.Length; i++)
+        {
+            tacticalButtons[i].interactable = true;
+        }
         DefaultPlayerPrefsData();
         UpdateInteractibleAttachmentsButton();
         UpdateEquipButton();
@@ -295,6 +346,7 @@ public class GameUI : MonoBehaviour
         sightScrollView.SetActive(false);
         barrelScroolView.SetActive(true);
         magScroolView.SetActive(false);
+        tacticalScrollView.SetActive(false);
         /*if (selectedSightIndex != currentEquippedSight)
         {
             selectedSightIndex = currentEquippedSight;
@@ -309,6 +361,34 @@ public class GameUI : MonoBehaviour
         for (int i = 0; i < magButtons.Length; i++)
         {
             magButtons[i].interactable = true;
+        }
+        for (int i = 0; i < tacticalButtons.Length; i++)
+        {
+            tacticalButtons[i].interactable = true;
+        }
+        DefaultPlayerPrefsData();
+        UpdateInteractibleAttachmentsButton();
+        UpdateEquipButton();
+    }
+    public void OnClickGrid_5()//Tactical
+    {
+        OnClickAttachmentsButton();
+        sightScrollView.SetActive(false);
+        barrelScroolView.SetActive(false);
+        magScroolView.SetActive(false);
+        tacticalScrollView.SetActive(true);
+        
+        for (int i = 0; i < sightButtons.Length; i++)
+        {
+            sightButtons[i].interactable = true;
+        }
+        for (int i = 0; i < magButtons.Length; i++)
+        {
+            magButtons[i].interactable = true;
+        }
+        for (int i = 0; i < barrelButtons.Length; i++)
+        {
+            barrelButtons[i].interactable = true;
         }
         DefaultPlayerPrefsData();
         UpdateInteractibleAttachmentsButton();
@@ -428,22 +508,34 @@ public class GameUI : MonoBehaviour
         SelectButtonBarrel(button);
         UpdateEquipButton();
     }
-
-    
-    private void LoadSelectedSight()
+    public void OnClickTactical_1(Button button)
     {
-        if (PlayerPrefs.HasKey("SelectedSightIndex"))
-        {
-            currentEquippedSight = PlayerPrefs.GetInt("SelectedSightIndex");
-        }
-        else
-        {
-            currentEquippedSight = 0;
-        }
-        selectedSightIndex = currentEquippedSight;
-        UpdateSightOnWeapon();
+        selectedTacticalIndex = 0;
+        defaultTactical.SetActive(true);
+        fireTactical.SetActive(false);
+        lightTactical.SetActive(false);
+        SelectButtonTactical(button);
+        UpdateEquipButton();
+    }
 
-        Debug.Log("Yüklenen Sight: " + currentEquippedSight);
+    public void OnClickTactical_2(Button button)
+    {
+        selectedTacticalIndex = 1;
+        defaultTactical.SetActive(false);
+        fireTactical.SetActive(true);
+        lightTactical.SetActive(false);
+        SelectButtonBarrel(button);
+        UpdateEquipButton();
+    }
+
+    public void OnClickTactical_3(Button button)
+    {
+        selectedTacticalIndex = 2;
+        defaultTactical.SetActive(false);
+        fireTactical.SetActive(false);
+        lightTactical.SetActive(true);
+        SelectButtonBarrel(button);
+        UpdateEquipButton();
     }
 
     private void LoadSelectedAttachments()
@@ -486,5 +578,17 @@ public class GameUI : MonoBehaviour
         selectedMagIndex = currentEquippedMag;
         UpdateMagOnWeapon();
 
+
+        // Tactical yükle
+        if (PlayerPrefs.HasKey("SelectedTacticalIndex"))
+        {
+            currentEqippedTactical = PlayerPrefs.GetInt("SelectedTacticalIndex");
+        }
+        else
+        {
+            currentEqippedTactical = 0;
+        }
+        selectedTacticalIndex = currentEqippedTactical;
+        UpdateTacticalOnWeapon();
     }
 }
