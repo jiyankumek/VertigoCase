@@ -15,6 +15,7 @@ public class GameUI : MonoBehaviour
     public GameObject barrelScroolView;
     public GameObject magScroolView;
     public GameObject tacticalScrollView;
+    public GameObject stockScrollView;
 
     //sight gameobjeleri
     public GameObject defaultSight;
@@ -38,10 +39,15 @@ public class GameUI : MonoBehaviour
     public GameObject fireTactical;
     public GameObject lightTactical;
 
+    //stock gameobjeleri
+    public GameObject defaultStock;
+    public GameObject longStock;
+
     public Button[] sightButtons; 
     public Button[] barrelButtons;
     public Button[] magButtons;
     public Button[] tacticalButtons;
+    public Button[] stockButtons;
 
     public GameObject equipButton;
     private Button equipbuttonn;
@@ -65,11 +71,16 @@ public class GameUI : MonoBehaviour
     private int currentEqippedTactical = 0;
     private int selectedTacticalIndex= -1;
 
+    //Stock için deðiþkenler
+    private int currentEquippedStock= 0;
+    private int selectedStockIndex= -1;
+
     private Button selectedButtonAttachment = null;
     private Button selectedButtonSight = null;
     private Button selectedButtonMag = null;
     private Button selectedButtonBarrel=null;
     private Button selectedButtonTactical = null;
+    private Button selectedButtonStock=null;
 
     void Start()
     {
@@ -134,6 +145,18 @@ public class GameUI : MonoBehaviour
             UpdateTacticalOnWeapon();
             PlayerPrefs.SetInt("SelectedTacticalIndex", currentEqippedTactical);
         }
+        //Stock
+        if (selectedStockIndex != -1)
+        {
+            if (currentEquippedStock != selectedStockIndex)
+            {
+                stockButtons[currentEquippedStock].interactable = true; // Eski stock butonunu aktif yap
+                currentEquippedStock = selectedStockIndex;
+                stockButtons[currentEquippedStock].interactable = false; // Yeni stock butonunu pasif yap
+            }
+            UpdateStockOnWeapon();
+            PlayerPrefs.SetInt("SelectedStockIndex", currentEquippedStock);
+        }
 
         PlayerPrefs.Save();
         equipButtonText.text = "Equýpped";
@@ -143,7 +166,9 @@ public class GameUI : MonoBehaviour
     {
         if (selectedSightIndex == currentEquippedSight
             && selectedBarrelIndex == currentEquippedBarrel
-            && selectedMagIndex == currentEquippedMag&& selectedTacticalIndex== currentEqippedTactical) 
+            && selectedMagIndex == currentEquippedMag
+            && selectedTacticalIndex== currentEqippedTactical
+            && selectedStockIndex==currentEquippedStock) 
         {
             equipButtonText.text = "Equýpped";
             equipbuttonn.interactable = false;
@@ -160,10 +185,12 @@ public class GameUI : MonoBehaviour
         selectedBarrelIndex = currentEquippedBarrel;
         selectedMagIndex = currentEquippedMag;
         selectedTacticalIndex = currentEqippedTactical;
+        selectedStockIndex = currentEquippedStock;
         UpdateBarrelOnWeapon();
         UpdateSightOnWeapon();
         UpdateMagOnWeapon();
         UpdateTacticalOnWeapon();
+        UpdateStockOnWeapon();
     }
     private void UpdateInteractibleAttachmentsButton()
     {
@@ -175,6 +202,8 @@ public class GameUI : MonoBehaviour
         selectedButtonMag.interactable = false;
         selectedButtonTactical = tacticalButtons[currentEqippedTactical];
         selectedButtonTactical.interactable = false;
+        selectedButtonStock=stockButtons[currentEquippedStock];
+        selectedButtonStock.interactable = false;
     }
     private void UpdateSightOnWeapon()
     {
@@ -219,6 +248,15 @@ public class GameUI : MonoBehaviour
         if (currentEqippedTactical == 0) defaultTactical.SetActive(true);
         else if (currentEqippedTactical == 1) fireTactical.SetActive(true);
         else if (currentEqippedTactical == 2) lightTactical.SetActive(true);
+    }
+    private void UpdateStockOnWeapon()
+    {
+        defaultStock.SetActive(false);
+        longStock.SetActive(false);
+       
+
+        if (currentEquippedStock == 0) defaultStock.SetActive(true);
+        else if (currentEquippedStock == 1) longStock.SetActive(true);
     }
     public void SelectButtonAttachment(Button button)
     {
@@ -266,6 +304,15 @@ public class GameUI : MonoBehaviour
         selectedButtonTactical = button;
         selectedButtonTactical.interactable = false;
     }
+    public void SelectButtonStock(Button button)
+    {
+        if (selectedButtonStock != null)
+        {
+            selectedButtonStock.interactable = true;
+        }
+        selectedButtonStock = button;
+        selectedButtonStock.interactable = false;
+    }
 
     public void OnClickAttachmentsButton()
     {
@@ -286,6 +333,7 @@ public class GameUI : MonoBehaviour
         barrelScroolView.SetActive(false);
         magScroolView.SetActive(false);
         tacticalScrollView.SetActive(false);
+        stockScrollView.SetActive(false);
         /*if (selectedBarrelIndex != currentEquippedBarrel)
         {
             selectedBarrelIndex = currentEquippedBarrel;
@@ -305,6 +353,11 @@ public class GameUI : MonoBehaviour
         {
             tacticalButtons[i].interactable = true;
         }
+        for (int i = 0; i < stockButtons.Length; i++)
+        {
+            stockButtons[i].interactable = true;
+        }
+
         DefaultPlayerPrefsData();
         UpdateInteractibleAttachmentsButton();
         UpdateEquipButton();
@@ -316,6 +369,7 @@ public class GameUI : MonoBehaviour
         barrelScroolView.SetActive(false);
         magScroolView.SetActive(true);
         tacticalScrollView.SetActive(false);
+        stockScrollView.SetActive(false);
         /*if (selectedMagIndex != currentEquippedMag)
         {
             selectedMagIndex = currentEquippedMag;
@@ -335,6 +389,11 @@ public class GameUI : MonoBehaviour
         {
             tacticalButtons[i].interactable = true;
         }
+        for (int i = 0; i < stockButtons.Length; i++)
+        {
+            stockButtons[i].interactable = true;
+        }
+
         DefaultPlayerPrefsData();
         UpdateInteractibleAttachmentsButton();
         UpdateEquipButton();
@@ -347,6 +406,7 @@ public class GameUI : MonoBehaviour
         barrelScroolView.SetActive(true);
         magScroolView.SetActive(false);
         tacticalScrollView.SetActive(false);
+        stockScrollView.SetActive(false);
         /*if (selectedSightIndex != currentEquippedSight)
         {
             selectedSightIndex = currentEquippedSight;
@@ -366,6 +426,41 @@ public class GameUI : MonoBehaviour
         {
             tacticalButtons[i].interactable = true;
         }
+        for (int i = 0; i < stockButtons.Length; i++)
+        {
+            stockButtons[i].interactable = true;
+        }
+
+        DefaultPlayerPrefsData();
+        UpdateInteractibleAttachmentsButton();
+        UpdateEquipButton();
+    }
+    public void OnClickGrid_4()//Stock
+    {
+        OnClickAttachmentsButton();
+        sightScrollView.SetActive(false);
+        barrelScroolView.SetActive(false);
+        magScroolView.SetActive(false);
+        tacticalScrollView.SetActive(false);
+        stockScrollView.SetActive(true);
+
+        for (int i = 0; i < sightButtons.Length; i++)//bunlarý tek for döngüsünde 5 kere döndürmek (en fazla 5 tane eklentili kategori var) daha mantýklý ama böyle güzel duruyor kod :d
+        {
+            sightButtons[i].interactable = true;
+        }
+        for (int i = 0; i < magButtons.Length; i++)
+        {
+            magButtons[i].interactable = true;
+        }
+        for (int i = 0; i < barrelButtons.Length; i++)
+        {
+            barrelButtons[i].interactable = true;
+        }
+        for (int i = 0; i < tacticalButtons.Length; i++)
+        {
+            tacticalButtons[i].interactable = true;
+        }
+        
         DefaultPlayerPrefsData();
         UpdateInteractibleAttachmentsButton();
         UpdateEquipButton();
@@ -377,7 +472,8 @@ public class GameUI : MonoBehaviour
         barrelScroolView.SetActive(false);
         magScroolView.SetActive(false);
         tacticalScrollView.SetActive(true);
-        
+        stockScrollView.SetActive(false);
+
         for (int i = 0; i < sightButtons.Length; i++)
         {
             sightButtons[i].interactable = true;
@@ -390,6 +486,11 @@ public class GameUI : MonoBehaviour
         {
             barrelButtons[i].interactable = true;
         }
+        for (int i = 0; i < stockButtons.Length; i++)
+        {
+            stockButtons[i].interactable = true;
+        }
+
         DefaultPlayerPrefsData();
         UpdateInteractibleAttachmentsButton();
         UpdateEquipButton();
@@ -537,6 +638,24 @@ public class GameUI : MonoBehaviour
         SelectButtonBarrel(button);
         UpdateEquipButton();
     }
+    public void OnClickStock_1(Button button)
+    {
+        selectedStockIndex = 0;
+        defaultStock.SetActive(true);
+        longStock.SetActive(false);
+        
+        SelectButtonStock(button);
+        UpdateEquipButton();
+    }
+    public void OnClickStock_2(Button button)
+    {
+        selectedStockIndex = 1;
+        defaultStock.SetActive(false);
+        longStock.SetActive(true);
+
+        SelectButtonStock(button);
+        UpdateEquipButton();
+    }
 
     private void LoadSelectedAttachments()
     {
@@ -590,5 +709,17 @@ public class GameUI : MonoBehaviour
         }
         selectedTacticalIndex = currentEqippedTactical;
         UpdateTacticalOnWeapon();
+
+        // Tactical yükle
+        if (PlayerPrefs.HasKey("SelectedStockIndex"))
+        {
+            currentEquippedStock = PlayerPrefs.GetInt("SelectedStockIndex");
+        }
+        else
+        {
+            currentEquippedStock = 0;
+        }
+        selectedStockIndex = currentEquippedStock;
+        UpdateStockOnWeapon();
     }
 }
