@@ -7,13 +7,13 @@ using System.Text.RegularExpressions;
 
 public class Importer : EditorWindow
 {
-    // Hedef klasör, harici klasör ve ad değiştirme için gerekli değişkenler
+    
     private string targetFolderPath = "";
     private string externalFolderPath = "";
     private string findString = "";
     private string replaceString = "";
 
-    // Harici klasörden okunan dosya isimleri (UI'de gösterilecek ve "X" ile kaldırılabilecek)
+    //External okunan dosyalar
     private List<string> externalAssetFileNames = new List<string>();
 
     private Vector2 scrollPosition;
@@ -35,7 +35,7 @@ public class Importer : EditorWindow
         GUILayout.Space(10);
         GUILayout.BeginHorizontal();
         GUILayout.FlexibleSpace();
-        // "Import" butonu: İşlem başlatılır
+        //Import butonu
         GUI.enabled = IsReadyForProcessing();
         if (GUILayout.Button("Import", GUILayout.Height(30), GUILayout.Width(250)))
         {
@@ -48,7 +48,7 @@ public class Importer : EditorWindow
         EditorGUILayout.EndScrollView();
     }
 
-    // Hedef klasörün seçilmesi için katlanabilir bölüm
+    //katlanma olayi
     private bool showTargetFolder = true;
     private void DrawTargetFolderSection()
     {
@@ -68,49 +68,60 @@ public class Importer : EditorWindow
         }
     }
 
-    // Harici klasör ve dosya listesini seçmek için bölüm
+    // external listesi ac kapa
     private bool showExternalFiles = true;
     private void DrawExternalAssetsSection()
     {
         GUILayout.Space(15);
         GUILayout.Label("External Assets", EditorStyles.boldLabel);
 
-        // Harici klasör yolunu al
+        // External yolu yaz
         GUILayout.BeginHorizontal();
         GUILayout.Label("External Assets Path", GUILayout.Width(120));
         externalFolderPath = EditorGUILayout.TextField(externalFolderPath);
         if (GUILayout.Button("Browse", GUILayout.Width(80)))
         {
             externalFolderPath = EditorUtility.OpenFolderPanel("Select External Folder", "", "");
-            // Klasör seçildiğinde dosyaları oku
+            // External dosyalarini cek
             UpdateExternalAssetsList();
         }
         GUILayout.EndHorizontal();
 
         GUILayout.Space(10);
-        // Dosya listesi katlanabilir bölümde gösteriliyor
+        // External listesi ac/kapa
         showExternalFiles = EditorGUILayout.Foldout(showExternalFiles, "External Files");
 
         if (showExternalFiles)
         {
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-            // Listeden her dosyayı ve yanındaki "X" butonunu göster
+
+            
+            int indexToRemove = -1;
+
             for (int i = 0; i < externalAssetFileNames.Count; i++)
             {
-                GUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField(externalAssetFileNames[i]);
-                // "X" butonuna basılırsa dosya listeden kaldırılır
+                EditorGUILayout.BeginHorizontal();
+
+                EditorGUILayout.LabelField(externalAssetFileNames[i], GUILayout.ExpandWidth(true));
+
                 if (GUILayout.Button("X", GUILayout.Width(20)))
                 {
-                    externalAssetFileNames.RemoveAt(i);
-                    break; // Döngüden çık, layout bozulmasın
+                    indexToRemove = i;
                 }
-                GUILayout.EndHorizontal();
+
+                EditorGUILayout.EndHorizontal();
             }
+
+            
+            if (indexToRemove != -1)
+            {
+                externalAssetFileNames.RemoveAt(indexToRemove);
+            }
+
             EditorGUILayout.EndVertical();
         }
 
-        // İsteğe bağlı: Harici dosyaları tekrar yüklemek için buton
+        // Harici dosyalari tekrar yüklemek icin buton (reset)
         GUILayout.Space(10);
         GUI.enabled = IsReadyForExternalFiles();
         if (GUILayout.Button("Pick Assets Folder", GUILayout.Height(30)))
@@ -120,7 +131,7 @@ public class Importer : EditorWindow
         GUI.enabled = true;
     }
 
-    // Ad değiştirme (Find/Replace) için katlanabilir bölüm
+    //Find/Replace icin katlanabilir kisim
     private bool showNaming = true;
     private void DrawNamingSection()
     {
@@ -134,7 +145,7 @@ public class Importer : EditorWindow
         }
     }
 
-    // İşleme başlamadan önce gerekli klasörlerin ve adlandırma değerlerinin dolu olduğundan emin olun
+    // İslem öncesinde folderlarin ve find/replace kisimlarinin dolu olup olmadigina bak
     private bool IsReadyForProcessing()
     {
         return Directory.Exists(targetFolderPath) &&
@@ -142,13 +153,13 @@ public class Importer : EditorWindow
                !string.IsNullOrWhiteSpace(findString);
     }
 
-    // Harici klasörün varlığını kontrol et
+    // external files var mi
     private bool IsReadyForExternalFiles()
     {
         return Directory.Exists(targetFolderPath) && Directory.Exists(externalFolderPath);
     }
 
-    // Harici klasörden dosya isimlerini alır (meta dosyaları hariç)
+    // external filesdeki dosya listesini olustur (.metalari alma direkt unity icinde yapmak istersek sorun cikmasin )
     private void UpdateExternalAssetsList()
     {
         externalAssetFileNames.Clear();
@@ -161,18 +172,18 @@ public class Importer : EditorWindow
         }
     }
 
-    // İşlemleri sırasıyla çalıştırır: çalışma klasörü oluşturma, yeniden adlandırma ve dosya kopyalama
+    // duplicate ve rename kisimlari yapılıyo
     private void ExecuteProcessing()
     {
         try
         {
-            // 1. Hedef klasörün çalışma kopyasını oluştur
+            // kopyasini al
             string tempFolder = CreateTempFolder();
 
-            // 2. Dosyaların adını yeniden düzenle
+            // adini degis
             ProcessRenaming(tempFolder);
 
-            // 3. Harici dosyaları kopyala (yalnızca UI'de kalan dosyalar)
+            // external fileslari kopyala 
             ReplaceMatchingAssets(tempFolder);
 
             AssetDatabase.Refresh();
@@ -185,15 +196,13 @@ public class Importer : EditorWindow
         }
     }
 
-    // Hedef klasörün çalışma kopyasını oluşturur.
-    // Temp klasör ismi, externalFolderPath'in en sağdaki klasör adı ile belirlenir.
-    // Eğer externalFolderPath geçerli değilse, timestamp kullanılır.
+    // target'in kopyasini al
     private string CreateTempFolder()
     {
         string folderName = "";
         if (!string.IsNullOrEmpty(externalFolderPath))
         {
-            // externalFolderPath'in sonunda varsa '/' veya '\' karakterlerini temizle
+            // externalFolderPath'in sonundaki klasor ismini al
             string trimmedPath = externalFolderPath.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
             folderName = Path.GetFileName(trimmedPath);
         }
@@ -202,7 +211,7 @@ public class Importer : EditorWindow
             folderName = $"PROCESSED_{System.DateTime.Now:yyyyMMdd_HHmmss}";
         }
 
-        // Temp klasör, targetFolderPath'in bulunduğu dizinde oluşturulsun
+        // Temp folder, targetFolderPath'in oldugu yere yapistirilsin
         string parentDir = Path.GetDirectoryName(targetFolderPath);
         string tempPath = Path.Combine(parentDir, folderName);
 
@@ -215,7 +224,7 @@ public class Importer : EditorWindow
         return tempPath;
     }
 
-    // Çalışma kopyasındaki dosya adlarını find/replace değerlerine göre değiştirir.
+    //externalfilesdaki dosyalari find/replace ile isimlerini degistir
     private void ProcessRenaming(string folderPath)
     {
         DirectoryInfo dir = new DirectoryInfo(folderPath);
@@ -231,7 +240,7 @@ public class Importer : EditorWindow
             string newPath = Path.Combine(file.DirectoryName, newName);
             File.Move(file.FullName, newPath);
 
-            // İlgili meta dosyasını da yeniden adlandır.
+            // meta dosyasinin ismini degistir
             string metaFile = file.FullName + ".meta";
             if (File.Exists(metaFile))
             {
@@ -240,22 +249,22 @@ public class Importer : EditorWindow
         }
     }
 
-    // UI'de kalan dosya isimlerini kullanarak, harici klasörden hedef çalışma klasörüne kopyalar.
+    
     private void ReplaceMatchingAssets(string targetFolder)
     {
-        // Hedef klasördeki dosya adlarını al.
+        // target folderdaki dosya adlarini al
         var targetFiles = Directory.GetFiles(targetFolder, "*.*", SearchOption.AllDirectories)
                                    .Select(Path.GetFileName)
                                    .ToHashSet();
 
-        // UI'de kalan her dosya için.
+        
         foreach (var fileName in externalAssetFileNames)
         {
-            // Harici klasördeki tam dosya yolunu bul.
+            // externalfilesdaki dosya yolundan ismi cek
             string externalFilePath = FindFileInDirectory(externalFolderPath, fileName);
             if (!string.IsNullOrEmpty(externalFilePath) && targetFiles.Contains(fileName))
             {
-                // Hedef klasörde aynı isimdeki dosyanın yolunu bul.
+                // targetfolderda ayni isimdeki dosyanin yolunu bul
                 string targetPath = Directory.GetFiles(targetFolder, fileName, SearchOption.AllDirectories)
                                              .FirstOrDefault();
                 if (!string.IsNullOrEmpty(targetPath))
@@ -267,7 +276,7 @@ public class Importer : EditorWindow
         }
     }
 
-    // Belirtilen dosya adını, kök klasör ve alt klasörlerde arar.
+    // Belirtilen dosya adini klasor icerisinde arar
     private string FindFileInDirectory(string root, string fileName)
     {
         var files = Directory.GetFiles(root, fileName, SearchOption.AllDirectories);
